@@ -1,6 +1,8 @@
 import tweepy
 import time
 import db
+from tweepy.parsers import JSONParser
+import json
 
 db = db.MongoAccess()
 # db.run_demo()
@@ -11,9 +13,9 @@ access_token = '1016750186297688064-FUsaE4m3FwclQZTSJmTNOMefOenrwo'
 access_token_secret = 'T4jK8OrtXRbosveqx55ZTMNbAcow4YusDaMY1WMmR2zd7'
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
+api = tweepy.API(auth, parser=JSONParser())
 user = api.get_user('jairbolsonaro')
-print user.screen_name, user.followers_count
+# print user.screen_name, user.followers_count
 
 def limit_handled(cursor):
     while True:
@@ -33,4 +35,18 @@ def run():
                 "user" : user.screen_name
             })
 
-run()
+def search(q):
+    return api.search(q)
+
+# run()
+
+data_searched = search("url:folha.com.br")
+data = data_searched["statuses"]
+
+for dt in data:
+    # print dt
+    for attribute, value in dt.iteritems():
+        print attribute, value # example usage
+    print "\n"
+
+# print json.loads(data)

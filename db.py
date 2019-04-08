@@ -4,7 +4,7 @@ class MongoAccess(object):
 
     host = 'localhost'
     port = 27017
-    database = 'test-database'
+    database = 'database-followers-1'
     collection = 'jairbolsonaro_followers'
     client = MongoClient(host, port)
 
