@@ -6,14 +6,14 @@ from tweepy.parsers import JSONParser
 
 db = db.MongoAccess()
 
-with open('config.json') as json_data_file:
-    data = json.load(json_data_file)
+# Load config data twitter api use.
+with open('config.json') as config_file:
+    config = json.load(config_file)
 
-consumer_key = data["twitter_access"]["consumer_key"]
-consumer_secret = data["twitter_access"]["consumer_secret"]
-access_token = data["twitter_access"]["access_token"]
-access_token_secret = data["twitter_access"]["access_token_secret"]
-
+consumer_key = config["twitter_access"]["consumer_key"]
+consumer_secret = config["twitter_access"]["consumer_secret"]
+access_token = config["twitter_access"]["access_token"]
+access_token_secret = config["twitter_access"]["access_token_secret"]
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=JSONParser())
