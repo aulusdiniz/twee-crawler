@@ -2,3 +2,4 @@ requirements_backup.txt
 *.pyc
 init/
 log.txt
+config.json

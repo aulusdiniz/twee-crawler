@@ -1,5 +1,5 @@
 import twittery
 
-download_followers()
+twittery.download_followers()
 
-make_query()
+twittery.make_query()

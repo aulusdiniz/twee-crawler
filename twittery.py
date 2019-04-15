@@ -1,14 +1,19 @@
 import tweepy
 import time
+import json
 import db
 from tweepy.parsers import JSONParser
 
 db = db.MongoAccess()
 
-consumer_key = 'nAVCimcTL3xR3AvnWdRJRkLBl'
-consumer_secret = 'k6A3eSyWn5CMbPpVjrV1h5BZkPa0QY6g9cJ1nviQBcDnGMo2M6'
-access_token = '1016750186297688064-FUsaE4m3FwclQZTSJmTNOMefOenrwo'
-access_token_secret = 'T4jK8OrtXRbosveqx55ZTMNbAcow4YusDaMY1WMmR2zd7'
+with open('config.json') as json_data_file:
+    data = json.load(json_data_file)
+
+consumer_key = data["twitter_access"]["consumer_key"]
+consumer_secret = data["twitter_access"]["consumer_secret"]
+access_token = data["twitter_access"]["access_token"]
+access_token_secret = data["twitter_access"]["access_token_secret"]
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=JSONParser())
@@ -56,6 +61,6 @@ def make_query():
             "created_at": dt["created_at"]
         }
         db.insert_one(tweet, "tweets_folha")
-
-download_followers()
-make_query()
+#
+# download_followers()
+# make_query()
