@@ -56,7 +56,7 @@ def make_query():
     for dt in data:
         # inspect dt for filter retweeted data
         tweet = {
-            "id": str(dt["id"]),
+            "id": str(dt["user"]["id"]),
             "text": dt["text"],
             "created_at": dt["created_at"]
         }
