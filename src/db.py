@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from pymongo import MongoClient
 
 class MongoAccess(object):
@@ -12,7 +13,7 @@ class MongoAccess(object):
 
     def insert_one(self, data, collection):
         if self.client[self.database][collection].find_one({"id": data["id"]}) == None:
-            print "saving new id \n"
+            print("saving new id "+data["id"]+" in collection "+collection+"\n")
             return self.client[self.database][collection].insert_one(data)
         else:
-            print "id already collected \n"
+            print("id already collected \n")
