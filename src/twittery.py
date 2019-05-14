@@ -33,17 +33,19 @@ def limit_handled(cursor):
     while True:
         try:
             yield cursor.next()
-            print("Waiting a minute for request ", "\n")
+            print("Waiting a minute for request \n")
             time.sleep(1*60)
 
         except tweepy.RateLimitError:
-            print("Rate limit reached ", "\n")
+            print("Rate limit reached \n")
             time.sleep(15*60)
 
         except tweepy.TweepError:
-            print(TweepError.message)
-            print("\n")
-            print(TweepError.message[0]['code'])
+            print("Erro \n")
+            # print(TweepError.message[0]['code'])
+
+        except:
+            print("Erro desconhecido. \n")
 
 def download_followers():
     pages = tweepy.Cursor(api.followers_ids, id=128372940, count=5000).pages()
@@ -58,10 +60,12 @@ def download_followers():
 def search(q):
     return api.search(q)
 
-def make_query():
+def query():
     for url in urls_toSearch:
         data_searched = search("url:"+url[1][0])
         data = data_searched["statuses"]
+
+        print("requesting for "+url[0][0].replace(' ','_')+" <<<<< \n")
 
         for dt in data:
             # inspect dt for filter retweeted data
@@ -72,6 +76,23 @@ def make_query():
             }
             db.insert_one(tweet, "tweets_"+url[0][0].replace(' ','_'))
 
-# fazer o mecanismo para baixar os dados das contas alvo automaticamente (lula, haddad, jair)
-# pegar os ids destas contas para substituir no código
-# criar métodos para filtrar base de seguidores por urls
+        print("Waiting 1m30 secs to make another query request \n")
+        time.sleep(1.5*60)
+
+def make_query():
+    while True:
+        try:
+            query()
+
+        except tweepy.RateLimitError:
+            print("Rate limit reached \n")
+            time.sleep(15*60)
+
+        except tweepy.TweepError:
+            print("Erro \n")
+
+        except:
+            print("Erro desconhecido. \n")
+
+def reports():
+    db.filter_by_profile('jairbolsonaro')

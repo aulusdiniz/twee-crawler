@@ -17,3 +17,14 @@ class MongoAccess(object):
             return self.client[self.database][collection].insert_one(data)
         else:
             print("id already collected \n")
+
+    def filter_by_profile(self, profile):
+        # print(dir(self.client[self.database].list_collections()))
+        c = self.client[self.database].list_collections()
+        for i in c:
+            print(i["name"], str(i["name"]).find("followers"))
+            if(str(i["name"]).find("followers") > -1):
+                print(self.client[self.database][i["name"]].count())
+                for e in self.client[self.database][i["name"]].find({}):
+                    pass
+                    # print((e["id"]))
