@@ -1,5 +1,3 @@
 #!/bin/bash
-./clear
 cd ~/git/twee-crawler
 sudo su
-./run
