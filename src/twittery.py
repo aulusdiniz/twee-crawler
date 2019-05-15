@@ -24,7 +24,7 @@ user = api.get_user('jairbolsonaro')
 db = db.MongoAccess()
 
 # read the urls code should search (make it read from relative path)
-csv = pd.read_csv("~/git/taurus-software/tweeter-crawler/src/input.csv")
+csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/input.csv")
 urls_names = csv[['Nome']].values
 urls = csv[['URL']].values
 urls_toSearch = zip(urls_names, urls)
