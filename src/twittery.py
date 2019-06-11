@@ -2,36 +2,16 @@
 import db
 from tweepy.parsers import JSONParser
 import tweepy
-import json
 import time
-import pandas as pd
+import settings
+# import json
+# import pandas as pd
 
-# Load config data twitter api use.
-with open('config.json') as config_file:
-    config = json.load(config_file)
-
-consumer_key = config["twitter_access"]["consumer_key"]
-consumer_secret = config["twitter_access"]["consumer_secret"]
-access_token = config["twitter_access"]["access_token"]
-access_token_secret = config["twitter_access"]["access_token_secret"]
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
+settings.init()
+auth = tweepy.OAuthHandler(settings.consumer_key, settings.consumer_secret)
+auth.set_access_token(settings.access_token, settings.access_token_secret)
 api = tweepy.API(auth, parser=JSONParser())
-
-#initiate database
 db = db.MongoAccess()
-
-# read the urls code should search (make it read from relative path)
-csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/input.csv")
-urls_names = csv[['Nome']].values
-urls = csv[['URL']].values
-urls_toSearch = zip(urls_names, urls)
-
-# read the accounts code should search (make it read from relative path)
-csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/inputf.csv")
-accounts = csv[['Nome']].values
-ids = csv[['ID']].values
-accounts_toSearch = zip(accounts, ids)
 
 def limit_handled(cursor):
     while True:
@@ -52,8 +32,9 @@ def limit_handled(cursor):
             print("Erro desconhecido. \n")
 
 def download_followers():
+    print("Start retrieve followers \n")
     while True:
-        for account in accounts_toSearch:
+        for account in settings.accounts_toSearch:
             user = api.get_user(account[0][0])
             pages = tweepy.Cursor(api.followers_ids, id=account[1][0], count=5000).pages()
 
@@ -69,7 +50,7 @@ def search(q):
     return api.search(q)
 
 def query():
-    for url in urls_toSearch:
+    for url in settings.urls_toSearch:
         data_searched = search("url:"+url[1][0])
         data = data_searched["statuses"]
         print("requesting for "+url[0][0].replace(' ','_')+" <<<<< \n")
@@ -102,6 +83,3 @@ def make_query():
 
         except:
             print("Erro desconhecido. \n")
-
-def reports():
-    db.filter_by_profile('jairbolsonaro')
