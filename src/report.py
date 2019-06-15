@@ -17,28 +17,26 @@ def add_collections_ids(origin, target):
         idx = { "id": id }
         db.insert_one(idx, target)
 
-def export_data():
-    db.export_collection("twitter","jairbolsonaro_followers")
-
-def import_data():
-    db.import_collection("twitter","bolsonaro_lula_haddad","jairbolsonaro_followers")
-
 def start():
+
     print("\n\n This may take time! please, wait until the end... \n\n")
+
     originAColl = "LulaOficial_followers"
     originBColl = "Haddad_Fernando_followers"
     targetABColl = "LulaHaddad_followers"
     subColl = "jairbolsonaro_followers"
     resColl = "bolsonaro_lula_haddad"
+    db_name = db.db_name()
 
-    print("\n Making LulaHaddad_followers \n")
-    # add lula and haddad followers
-    add_collections_ids(originAColl, targetABColl)
-    add_collections_ids(originBColl, targetABColl)
+    # copy Bolsonaro followers to bolsonaro_lula_haddad collection
+    db.export_collection(db_name, subColl)
+    db.import_collection(db_name, resColl, subColl)
 
-    print("\n copy LulaHaddad_followers \n")
-    # add jairbolsonaro_followers for operations
-    add_collections_ids(subColl, resColl)
+    # copy Haddad and Lula followers to LulaHaddad_followers
+    db.export_collection(db_name, originAColl)
+    db.export_collection(db_name, originBColl)
+    db.import_collection(db_name, targetABColl, originBColl)
+    db.import_collection(db_name, targetABColl, originAColl)
 
     # remove lula and haddad followers from jairbolsonaro_followers
     rm_collections_ids(targetABColl, resColl)

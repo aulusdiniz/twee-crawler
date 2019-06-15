@@ -13,9 +13,7 @@ thread2 = threading.Thread(target = twittery.download_followers, args = ())
 # thread2.start()
 
 # create report data for visualization
-# report.add_collections_ids()
-# report.export_data()
-report.import_data()
+report.start()
 
 # threads DEBUG settings
 # print("Total number of threads: ", threading.activeCount())
