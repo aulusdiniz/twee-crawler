@@ -6,12 +6,13 @@ import time
 import settings
 # import json
 # import pandas as pd
+# global db
+db = db.MongoAccess()
 
 settings.init()
 auth = tweepy.OAuthHandler(settings.consumer_key, settings.consumer_secret)
 auth.set_access_token(settings.access_token, settings.access_token_secret)
 api = tweepy.API(auth, parser=JSONParser())
-db = db.MongoAccess()
 
 def limit_handled(cursor):
     while True:

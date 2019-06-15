@@ -1,11 +1,12 @@
 requirements_backup.txt
 *.pyc
 init/
+dump/
+/lib/
+bin
+local
+include
 log.txt
 config.json
-bin
-/lib/
-include
-local
 pip-selfcheck.json
 !src
