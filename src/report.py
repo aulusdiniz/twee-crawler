@@ -5,17 +5,9 @@ db = db.MongoAccess()
 
 def rm_collections_ids(origin, target):
     collection = db.get_followers(origin)
-
     for id in collection:
         idx = { "id": id }
         db.delete_one(idx, target)
-
-def add_collections_ids(origin, target):
-    collection = db.get_followers(origin)
-
-    for id in collection:
-        idx = { "id": id }
-        db.insert_one(idx, target)
 
 def start():
 
