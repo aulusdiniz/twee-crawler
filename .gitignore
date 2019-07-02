@@ -1,7 +1,6 @@
 requirements_backup.txt
 *.pyc
 init/
-dump/
 /lib/
 bin
 local

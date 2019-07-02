@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from pymongo import MongoClient
+import settings
 import os
 # import subprocess
 
@@ -20,6 +21,43 @@ class MongoAccess(object):
     def import_collection(self, db, collectionTarget, collectionOrigin):
         # subprocess.call(['../import.sh'])
         os.system("mongorestore --collection " + collectionTarget + " --db " + db + " ./dump/" + db + "/" + collectionOrigin + ".bson")
+
+    def export_all_medias(self):
+        c = self.client[self.database].list_collections()
+        for i in c:
+            if(str(i["name"]).find("tweets") > -1):
+                collection = str(i["name"])
+                print(collection)
+                self.export_collection(self.database, collection)
+
+    def export_all_profiles(self):
+        c = self.client[self.database].list_collections()
+        for i in c:
+            if(str(i["name"]).find("followers") > -1):
+                collection = str(i["name"])
+                print(collection)
+                self.export_collection(self.database, collection)
+
+    def import_all_medias(self):
+        c = settings.urls_toSearch
+        for i in c:
+            collection = "tweets_" + i[0][0].replace(" ","_")
+            print(collection)
+            self.import_collection(self.database, collection, collection)
+
+    def import_all_profiles(self):
+        c = settings.accounts_toSearch
+        for i in c:
+            collection = i[0][0].replace(" ","_") + "_followers"
+            print(collection)
+            self.import_collection(self.database, collection, collection)
+
+    def drop_collections(self):
+        c = self.client[self.database].list_collections()
+        for i in c:
+            collection = str(i["name"])
+            print(collection)
+            self.client[self.database][collection].drop()
 
     def insert_one(self, data, collection):
         if self.client[self.database][collection].find_one({"id": data["id"]}) == None:
@@ -43,3 +81,24 @@ class MongoAccess(object):
                 return [e["id"] for e in self.client[self.database][i["name"]].find({})]
                     # print((e["id"]))
                     # pass
+
+    def count_collection(self, collections, type):
+        c = self.client[self.database].list_collections()
+        result = []
+        labels = []
+        for i in c:
+            # print(i)
+            if(type == "followers"):
+                if((str(i["name"]).find("followers") > -1) and (str(i["name"]) in collections)):
+                    label = str(i["name"]).split("_")[0]
+                    labels.append(label)
+                    result.append(self.client[self.database][i["name"]].count())
+
+            if(type == "tweets"):
+                if(str(i["name"]).find("tweets") > -1):
+                    # print(str(i["name"]).split("tweets_"))
+                    label = str(i["name"]).split("tweets_")[1]
+                    labels.append(label)
+                    result.append(self.client[self.database][i["name"]].count())
+
+        return [result, labels]
