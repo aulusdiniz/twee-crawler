@@ -35,6 +35,8 @@ def import_all():
 def drop_collections():
     db.drop_collections()
 
+# -------------------- In development ---------------------------------------- #
+
 def rm_collections_ids(origin, target):
     collection = db.get_followers(origin)
     for id in collection:
@@ -62,9 +64,14 @@ def start():
     db.import_collection(db_name, targetABColl, originAColl)
 
     # remove lula and haddad followers from jairbolsonaro_followers
-    rm_collections_ids(targetABColl, resColl)
+    # rm_collections_ids(targetABColl, resColl)
 
     print("\n ---------- the processing has finished ---------- \n")
+
+def bolso():
+    res = db.filter2("jairbolsonaro_followers","LulaHaddad_followers")
+    for w in res:
+        print(w)
 
 def plotBarGeneral():
     collections = ["jairbolsonaro_followers", "LulaOficial_followers", "Haddad_Fernando_followers"]

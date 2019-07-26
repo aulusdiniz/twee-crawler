@@ -31,3 +31,9 @@ def init():
     accounts = csv[['Nome']].values
     ids = csv[['ID']].values
     accounts_toSearch = zip(accounts, ids)
+
+    global medias_accounts_toSearch
+    csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/data/medias-profile.csv")
+    accounts = csv[['Conta']].values
+    ids = csv[['ID']].values
+    medias_accounts_toSearch = zip(accounts, ids)

@@ -6,6 +6,6 @@ bin
 local
 include
 log.txt
-config.json
 pip-selfcheck.json
 !src
+config.json

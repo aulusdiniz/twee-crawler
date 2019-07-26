@@ -11,6 +11,13 @@ class MongoAccess(object):
     database = 'twitter'
     client = MongoClient(host, port)
 
+    def __init__(self):
+        print("db init...")
+        c = self.client[self.database].list_collections()
+        for i in c:
+            collection = str(i["name"])
+            self.client[self.database][collection].create_index([("id", -1)])
+
     def db_name(self):
         return self.database
 
@@ -81,6 +88,50 @@ class MongoAccess(object):
                 return [e["id"] for e in self.client[self.database][i["name"]].find({})]
                     # print((e["id"]))
                     # pass
+
+    def filter1(self):
+        collection = "LulaHaddad_followers"
+        forbArr = self.get_followers("jairbolsonaro_followers")
+        query = { "id": { "$nin": forbArr[:100] } }
+        # print(forbArr)
+        ffile = open('data_bolso_lulahaddad.txt', 'w')
+        result = self.skiplimit(collection, query, 5000, 1)
+        for i in result:
+            print(i)
+        print(len(result))
+
+    def filter2(self, collection, collectionCompare):
+        result = self.client[self.database][collection].aggregate([{
+            "$lookup": {
+                    "from": collectionCompare,
+                    "localField":"id",
+                    "foreignField":"id",
+                    "as":"result",
+                }
+            },
+            {"$match": {
+                    "result": {"$eq": []}
+                }
+            },
+            {"$group": {
+                "_id" : None,
+                # "count" : {"$sum" : 1}
+                }
+            }
+        ])
+        return result
+
+    def skiplimit(self, collection, query, page_size, page_num):
+        """returns a set of documents belonging to page number `page_num`
+        where size of each page is `page_size`.
+        """
+        # Calculate number of documents to skip
+        skips = page_size * (page_num - 1)
+        # Skip and limit
+        cursor = list(self.client[self.database][collection].find(query).skip(skips).limit(page_size))
+        # arr = [x for x in cursor]
+        # Return documents
+        return cursor
 
     def count_collection(self, collections, type):
         c = self.client[self.database].list_collections()

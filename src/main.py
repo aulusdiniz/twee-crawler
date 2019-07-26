@@ -11,14 +11,14 @@ thread1 = threading.Thread(target = twittery.make_query, args = ())
 thread2 = threading.Thread(target = twittery.download_followers, args = ())
 thread3 = threading.Thread(target = report.animate, args = ())
 # thread1.start()
-# thread2.start()
+thread2.start()
 # thread3.start()
 
 # threads DEBUG settings
 # print("Total number of threads: ", threading.activeCount())
 # print("List of threads: ", threading.enumerate())
 
-# Descomente para gerar visualização gráfica
+# Descomente para gerar visualizacao grafica
 # report.plotBarGeneral()
 
 # create report data for visualization
@@ -30,3 +30,5 @@ thread3 = threading.Thread(target = report.animate, args = ())
 # Descomente para exportar ou importar dados da pasta dump
 # report.export_all()
 # report.import_all()
+
+report.bolso()

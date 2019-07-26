@@ -33,9 +33,11 @@ def limit_handled(cursor):
             print("Erro desconhecido. \n")
 
 def download_followers():
+    data = settings.medias_accounts_toSearch
+
     print("Start retrieve followers \n")
     while True:
-        for account in settings.accounts_toSearch:
+        for account in data:
             user = api.get_user(account[0][0])
             pages = tweepy.Cursor(api.followers_ids, id=account[1][0], count=5000).pages()
 
