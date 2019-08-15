@@ -37,3 +37,4 @@ def init():
     accounts = csv[['Conta']].values
     ids = csv[['ID']].values
     medias_accounts_toSearch = zip(accounts, ids)
+    print(accounts, ids)

@@ -1,9 +1,6 @@
 #!/usr/bin/python
-import db
 from tweepy.parsers import JSONParser
-import tweepy
-import time
-import settings
+import db, tweepy, time, settings, math
 # import json
 # import pandas as pd
 # global db
@@ -17,36 +14,84 @@ api = tweepy.API(auth, parser=JSONParser())
 def limit_handled(cursor):
     while True:
         try:
-            yield cursor.next()
-            print("Waiting a minute for request \n")
-            time.sleep(1*60)
+            # import pdb; pdb.set_trace()
+            # import sys; exc_type, exc_value, tb = sys.exc_info()
+            # from pprint import pprint; pprint(tb.tb_frame.f_locals)
+            if(cursor.limit > cursor.next_cursor):
+                yield cursor.next()
+                print("Waiting a minute for request \n")
+                time.sleep(1*60)
+            else: pass
 
         except tweepy.RateLimitError:
+            # import pdb; pdb.set_trace()
+            import sys; exc_type, exc_value, tb = sys.exc_info()
+            from pprint import pprint; pprint(tb.tb_frame.f_locals)
             print("Rate limit reached \n")
             time.sleep(15*60)
 
         except tweepy.TweepError:
+            # import pdb; pdb.set_trace()
+            import sys; exc_type, exc_value, tb = sys.exc_info()
+            from pprint import pprint; pprint(tb.tb_frame.f_locals)
             print("Erro \n")
-            # print(TweepError.message[0]['code'])
 
-        except:
+        except Exception:
+            # import pdb; pdb.set_trace()
+            import sys; exc_type, exc_value, tb = sys.exc_info()
+            from pprint import pprint; pprint(tb.tb_frame.f_locals)
             print("Erro desconhecido. \n")
 
 def download_followers():
+    # this line defines which input take
+    data = settings.medias_accounts_toSearch
+    # data = settings.accounts_toSearch
+
+    while True:
+        for account in data:
+            user = api.get_user(account[0][0])
+            nfollowers = user["followers_count"]
+            nfullpages = nfollowers/5000
+            frac, dec = math.modf(nfullpages)
+            print(nfollowers/5000, nfollowers%5000)
+            # print(frac, dec)
+            pages = []
+            if ((nfollowers/5000) > 1):
+                pages = tweepy.Cursor(api.followers_ids, id=account[1][0], count=500).pages(dec)
+                # print(pages)
+                last_page = tweepy.Cursor(api.followers_ids, id=account[1][0], count=nfollowers, page=(dec+1)).pages()
+            else:
+                print("len(pages)", len(pages))
+                pages = tweepy.Cursor(api.followers_ids, id=account[1][0], count=nfollowers).pages()
+
+            print("Start retrieve followers \n")
+            for page in limit_handled(pages):
+                count=0
+                print(page)
+                for id in page["ids"]:
+                    # count=count+1
+                    # print(count)
+                    follower = {
+                        "id": str(id)
+                    }
+                    db.insert_one(follower, account[0][0]+"_followers")
+
+def download_timeline():
     data = settings.medias_accounts_toSearch
 
     print("Start retrieve followers \n")
     while True:
         for account in data:
             user = api.get_user(account[0][0])
-            pages = tweepy.Cursor(api.followers_ids, id=account[1][0], count=5000).pages()
-
+            username = user["screen_name"]
+            number_of_tweets = 200 #200 MAX
+            pages = tweepy.Cursor(api.user_timeline).pages()
             for page in limit_handled(pages):
-                for id in page["ids"]:
-                    follower = {
-                        "id": str(id)
-                    }
-                    db.insert_one(follower, account[0][0]+"_followers")
+                print(page)
+                # db.insert_one(follower, account[0][0]+"_followers")
+
+            # tweets = api.user_timeline(screen_name=username, count=number_of_tweets, exclude_replies=True)
+            # tweets_for_csv = [[username,tweet["id_str"], tweet["created_at"], tweet["text"].encode("utf-8")] for tweet in tweets]
 
 def search(q):
     # print("query search is ", q)
