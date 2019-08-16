@@ -13,9 +13,9 @@ thread3 = threading.Thread(target = report.animate, args = ())
 thread4 = threading.Thread(target = twittery.download_timeline, args = ())
 
 # thread1.start()
-thread2.start()
+# thread2.start()
 # thread3.start()
-# thread4.start()
+thread4.start()
 
 # threads DEBUG settings
 # print("Total number of threads: ", threading.activeCount())

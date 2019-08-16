@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from tweepy.parsers import JSONParser
+# from tweepy.parsers import JSONParser
 import db, tweepy, time, settings, math
 # import json
 # import pandas as pd
@@ -9,7 +9,8 @@ db = db.MongoAccess()
 settings.init()
 auth = tweepy.OAuthHandler(settings.consumer_key, settings.consumer_secret)
 auth.set_access_token(settings.access_token, settings.access_token_secret)
-api = tweepy.API(auth, parser=JSONParser())
+api = tweepy.API(auth)
+# api = tweepy.API(auth, parser=JSONParser())
 
 def limit_handled(cursor):
     while True:
@@ -17,11 +18,15 @@ def limit_handled(cursor):
             # import pdb; pdb.set_trace()
             # import sys; exc_type, exc_value, tb = sys.exc_info()
             # from pprint import pprint; pprint(tb.tb_frame.f_locals)
-            if(cursor.limit > cursor.next_cursor):
+            if(cursor.limit > cursor.num_tweets):
                 yield cursor.next()
                 print("Waiting a minute for request \n")
                 time.sleep(1*60)
-            else: pass
+            else:
+                yield cursor.next()
+                print("Waiting a minute for request \n")
+                time.sleep(1*60)
+
 
         except tweepy.RateLimitError:
             # import pdb; pdb.set_trace()
@@ -44,8 +49,8 @@ def limit_handled(cursor):
 
 def download_followers():
     # this line defines which input take
-    data = settings.medias_accounts_toSearch
-    # data = settings.accounts_toSearch
+    # data = settings.medias_accounts_toSearch
+    data = settings.accounts_toSearch
 
     while True:
         for account in data:
@@ -66,11 +71,11 @@ def download_followers():
 
             print("Start retrieve followers \n")
             for page in limit_handled(pages):
-                count=0
-                print(page)
+                count = 0
+                # print(page)
                 for id in page["ids"]:
-                    # count=count+1
-                    # print(count)
+                    count = count+1
+                    print(count)
                     follower = {
                         "id": str(id)
                     }
@@ -78,17 +83,28 @@ def download_followers():
 
 def download_timeline():
     data = settings.medias_accounts_toSearch
+    # data = settings.accounts_toSearch
 
     print("Start retrieve followers \n")
     while True:
         for account in data:
             user = api.get_user(account[0][0])
-            username = user["screen_name"]
+            username = user.screen_name
             number_of_tweets = 200 #200 MAX
             pages = tweepy.Cursor(api.user_timeline).pages()
             for page in limit_handled(pages):
-                print(page)
-                # db.insert_one(follower, account[0][0]+"_followers")
+                # count = 0
+                for status in page:
+                    # import pdb; pdb.set_trace()
+                    # count = count+1
+                    # print(count)
+                    tweet = {
+                        "id": status.id,
+                        # "screen_name": status.screen_name,
+                        # "location": status.location,
+                        "text": status.text
+                    }
+                    db.insert_one(tweet, str(account[0][0])+"_statuses")
 
             # tweets = api.user_timeline(screen_name=username, count=number_of_tweets, exclude_replies=True)
             # tweets_for_csv = [[username,tweet["id_str"], tweet["created_at"], tweet["text"].encode("utf-8")] for tweet in tweets]

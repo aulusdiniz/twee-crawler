@@ -16,7 +16,7 @@ class MongoAccess(object):
         c = self.client[self.database].list_collections()
         for i in c:
             collection = str(i["name"])
-            self.client[self.database][collection].create_index([("id", -1)])
+            # self.client[self.database][collection].create_index([("id", -1)])
 
     def db_name(self):
         return self.database
@@ -68,7 +68,7 @@ class MongoAccess(object):
 
     def insert_one(self, data, collection):
         if self.client[self.database][collection].find_one({"id": data["id"]}) == None:
-            print("saving new id "+data["id"]+" in collection "+collection+" \n")
+            print("saving new id "+str(data["id"])+" in collection "+str(collection)+" \n")
             return self.client[self.database][collection].insert_one(data)
         else:
             print("id already collected \n")
