@@ -33,5 +33,3 @@ thread4.start()
 # Descomente para exportar ou importar dados da pasta dump
 # report.export_all()
 # report.import_all()
-
-report.bolso()

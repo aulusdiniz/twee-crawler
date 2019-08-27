@@ -1,6 +1,7 @@
 #!/usr/bin/python
+import numpy as np
 import pandas as pd
-import json
+import json, pdb
 
 def init():
     global config
@@ -21,20 +22,22 @@ def init():
     # read the urls code should search (make it read from relative path)
     global urls_toSearch
     csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/data/medias.csv")
-    urls_names = csv[['Nome']].values
-    urls = csv[['URL']].values
-    urls_toSearch = zip(urls_names, urls)
-
+    urls_names = csv[['Nome']].values.flatten()
+    urls = csv[['URL']].values.flatten()
+    urls_toSearch = (urls_names, urls)
+    
     # read the accounts code should search (make it read from relative path)
     global accounts_toSearch
     csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/data/profiles.csv")
-    accounts = csv[['Nome']].values
-    ids = csv[['ID']].values
-    accounts_toSearch = zip(accounts, ids)
+    accounts = csv[['Nome']].values.flatten()
+    ids = csv[['ID']].values.flatten()
+    accounts_toSearch = (accounts, ids)
+    
 
     global medias_accounts_toSearch
     csv = pd.read_csv(config["enviroment"]["project"]["path"]+"/src/data/medias-profile.csv")
-    accounts = csv[['Conta']].values
-    ids = csv[['ID']].values
-    medias_accounts_toSearch = zip(accounts, ids)
+    accounts = csv[['Conta']].values.flatten()
+    ids = csv[['ID']].values.flatten()
+    medias_accounts_toSearch = (accounts, ids)
     print(accounts, ids)
+    
