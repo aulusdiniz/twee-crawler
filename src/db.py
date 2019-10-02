@@ -146,64 +146,45 @@ class MongoAccess(object):
         ])
         print("Intersection found.")
 
-        x = []
+        it = []
         for itr in result:
             it = bson.decode_all(itr)
-            print(it)
-            print(len(it))
-            x.append([it.id for it in result])
-        # pdb.set_trace()
-        return x
+            # print(it)
+            # print(len(it))
+        return it
 
 
-    def shuffleCollections(self):
+    def processCollections(self):
         """ Algoritmo que faz o cruzamento das collections para fazer o cálculo da intersecção em seguida. """
+        print("Combinating collections to have the size of each intersection.")
         collectionsName = self.client[self.database].list_collections()
         collections = []
-
-        print("Combinating collections to have the size of each intersection.")
-
+        wasteArr = []
+        resultJSON = []
+        
         for cc in collectionsName:
             collections.append(cc)
 
         wArray = tuple(collections)
-        wasteArr = []
-
-        resultJSON = []
 
         for i in wArray:
             wasteArr.append(i['name'])
             for k in wArray:
                 try:
                     if(wasteArr.index(k['name']) < 0):
-                        if(("_followers" in i['name']) and ("_followers" in k['name'])):
-                            if(i['name'] != k['name']):
-                                # print(i['name'], k['name'])
-                                resultJSON.append({
-                                    "coll1": i['name'],
-                                    "coll2": k['name'],
-                                    # "ids": self.findIntersection(i['name'], k['name']),
-                                    "qtd": len(self.findIntersection(i['name'], k['name']))
-                                })
-
+                        pass
 
                 except ValueError:
-                    pass
-                else:
                     if(("_followers" in i['name']) and ("_followers" in k['name'])):
                         if(i['name'] != k['name']):
                             # print(i['name'], k['name'])
                             resultJSON.append({
-                                "coll1": i['name'],
-                                "coll2": k['name'],
+                                "coll1": i['name'].replace("_followers",""),
+                                "coll2": k['name'].replace("_followers",""),
                                 # "ids": self.findIntersection(i['name'], k['name']),
                                 "qtd": len(self.findIntersection(i['name'], k['name']))
-
                             })
-
-                            #PS: resultJSON only must be this format when it is a dict data type.
-                            #PS: other way is use it as array.
-        # pdb.set_trace()
+        return resultJSON
 
 
     def skiplimit(self, collection, query, page_size, page_num):

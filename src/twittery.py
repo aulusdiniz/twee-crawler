@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # from tweepy.parsers import JSONParser
-import db, tweepy, time, settings, math, pdb
+import db, tweepy, time, settings, math, pdb, os
 import numpy as np
 # import json
 # import pandas as pd
@@ -158,7 +158,19 @@ def loadBackupData():
     db.import_all_tweets()
     print("followers collection imported")
 
+def clearFileOutput(pathToFile):
+    os.remove(pathToFile)
 
-def filter():
+def saveFileOutput(data):
+    path = os.getcwd()
+    fl = path + '/src/data/output.csv'
+    clearFileOutput(fl)
+    with open( fl, 'w+' ) as f:
+        for i in data:
+            f.write(i["coll1"]+","+i["coll2"]+","+str(i["qtd"])+"\n")
+
+def processDataGraph():
     # loadBackupData()
-    db.shuffleCollections()
+    jsonData = db.processCollections()
+    print(jsonData)
+    saveFileOutput(jsonData)
