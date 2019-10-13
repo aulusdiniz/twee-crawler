@@ -126,7 +126,6 @@ def query():
         data = search("url:"+url[0])
         print("requesting for [ "+url[1].replace(' ', '_')+" ] \n")
 
-
         for dt in data:
             # inspect dt for filter retweeted data
             tweet = {
