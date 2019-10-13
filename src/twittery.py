@@ -75,7 +75,9 @@ def download_followers():
     # data = settings.medias_accounts_toSearch
 
     print("Downloading followers..")
-    dt = settings.accounts_toSearch
+    # dt = settings.accounts_toSearch
+    dt = settings.medias_accounts_toSearch
+
     data = np.dstack((dt[1], dt[0]))[0]
     print(data)
 
@@ -117,21 +119,22 @@ def search(q):
 
 
 def query():
-    for url in settings.urls_toSearch:
-        data_searched = search("url:"+url[1][0])
-        data = data_searched["statuses"]
-        print("requesting for "+url[0][0].replace(' ', '_')+" <<<<< \n")
-        # print("\n")
-        # print(data_searched)
+    dt = settings.urls_toSearch
+    data = np.dstack((dt[1],dt[0]))[0]
+
+    for url in data:
+        data = search("url:"+url[0])
+        print("requesting for [ "+url[1].replace(' ', '_')+" ] \n")
+
 
         for dt in data:
             # inspect dt for filter retweeted data
             tweet = {
-                "id": str(dt["user"]["id"]),
-                "text": dt["text"],
-                "created_at": dt["created_at"]
+                "id": str(dt.user.id),
+                "text": dt.text,
+                "created_at": dt.created_at
             }
-            db.insert_one(tweet, "tweets_"+url[0][0].replace(' ', '_'))
+            db.insert_one(tweet, "tweets_"+url[1].replace(' ', '_'))
 
         print("Waiting 1m30 secs to make another query request \n")
         time.sleep(1.5*60)

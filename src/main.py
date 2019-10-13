@@ -10,7 +10,7 @@ thread4 = threading.Thread(target = twittery.download_timeline, args = ())
 
 
 """ Main bot threads """
-# thread1.start()
+thread1.start()
 # thread2.start()
 # thread3.start()
 # thread4.start()
@@ -19,7 +19,7 @@ thread4 = threading.Thread(target = twittery.download_timeline, args = ())
 # twittery.loadBackupData()
 
 """ Filter database ids """
-twittery.processDataGraph()
+# twittery.processDataGraph()
 
 
 # threads DEBUG settings
